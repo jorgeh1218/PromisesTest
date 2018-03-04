@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Promisify setTimeout</title>
+</head>
+<body>
+	<h1>Did the promise finish?</h1>
+	<p>In this example, the behaviour f promises is exposed</p>
+	<p>All of the codes run a function that generates a random number from 1 to 10 seconds</p>
+	<p>Then, they will wait the number of seconds and then they will write HTML in the screen</p>
+	<p>Single Promise runs only one promise, forEach Promise runs five promises, you will see random order of finish.</p>
+	<div style="color: red" class="completion">
+		<h4>Results</h4>
+	</div>
+
+	<br>
+	<button id="buttonSingle" onclick="singlePromise()">Single Promise</button>
+	<button id="buttonForEach" onclick="forEachPromise()">For Each (5) Promises</button>
+	<button id="buttonMap" onclick="mapPromise()">Map (5) Promises</button>
+	<script>
+		function getRandomInt(max) {
+		  return Math.floor(Math.random() * Math.floor(max) * 1000);
+		}
+
+
+		function wait(ms) {
+			return new Promise(function(resolve, reject)
+			{
+				console.log(ms);
+				window.setTimeout(function() {
+					resolve(ms);
+					reject();
+				}, ms);
+			});
+			
+		};
+
+		function singlePromise()
+		{
+			 document.querySelector('#buttonSingle').innerHTML = "Loading...";
+			 var array = [1,2,3,4,5];
+			 var milliseconds = getRandomInt(10);
+			
+			 wait(milliseconds).then(function(ms)
+			 {	
+				document.querySelector('#buttonSingle').innerHTML = "Single Promise";
+			 	finish(ms, "Single-Promise");
+			 });
+		}
+
+		function forEachPromise()
+		{
+			 document.querySelector('#buttonForEach').innerHTML = "Loading...";
+			 let array = [1,2,3,4,5];
+			 let milliseconds = getRandomInt(10);
+			 let processed = 0;
+			 array.forEach(function(item){
+			 	milliseconds = getRandomInt(10);
+			 	wait(milliseconds).then(function(ms){
+			 		processed++;
+			 		if(processed == 5)
+			 			document.querySelector('#buttonForEach').innerHTML = "For Each (5) Promises";
+			 		finish(ms, `ForEach-Promise ${item}`);
+			 	})
+			 })
+		}
+
+
+		function mapPromise()
+		{
+			 document.querySelector('#buttonMap').innerHTML = "Loading...";
+			 let array = [1,2,3,4,5];
+			 let milliseconds = getRandomInt(10);
+			 let processed = 0;
+			 array.map(function(item){
+			 	milliseconds = getRandomInt(10);
+			 	wait(milliseconds).then(function(ms){
+			 		processed++;
+			 		if(processed == 5)
+			 			document.querySelector('#buttonMap').innerHTML = "Map (5) Promises";
+			 		finish(ms, `Map-Promise ${item}`);
+			 	})
+			 })
+		}
+
+		
+		function finish(milliseconds, typeOfPromise) {
+			var completion = document.querySelector('.completion');
+			completion.innerHTML = completion.innerHTML + `${typeOfPromise} - finished at  ${Math.round(milliseconds/1000)} second(s) <br>`;
+		};
+	</script>
+</body>
+</html>
